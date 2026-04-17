@@ -1,0 +1,7 @@
+# Normalize line endings: LF in repo, CRLF on Windows checkout
+* text=auto eol=lf
+*.java text eol=lf
+*.properties text eol=lf
+*.yml text eol=lf
+*.xml text eol=lf
+Dockerfile text eol=lf
