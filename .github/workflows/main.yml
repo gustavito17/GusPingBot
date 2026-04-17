@@ -8,6 +8,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/gus-ping-bot
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ──────────────────────────────────────────
@@ -20,8 +21,6 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -29,8 +28,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Build and run tests
         run: ./mvnw verify -B --no-transfer-progress
@@ -42,8 +39,6 @@ jobs:
           name: test-reports
           path: target/surefire-reports/
           retention-days: 7
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -51,12 +46,10 @@ jobs:
           name: app-jar
           path: target/always-on-ping-bot-*.jar
           retention-days: 1
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
   # ──────────────────────────────────────────
   #  JOB 2: Docker Build & Push
-  #  Solo corre en push a main Y si los secrets están configurados
+  #  Solo corre en push a main
   # ──────────────────────────────────────────
   docker-publish:
     name: Docker Build & Push
@@ -67,21 +60,15 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Extract metadata
         id: meta
@@ -91,8 +78,6 @@ jobs:
           tags: |
             type=sha,prefix=sha-,format=short
             type=raw,value=latest,enable=true
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       - name: Build and push image
         uses: docker/build-push-action@v6
@@ -103,5 +88,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
