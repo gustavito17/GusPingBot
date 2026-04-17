@@ -30,7 +30,9 @@ jobs:
           cache: maven
 
       - name: Build and run tests
-        run: ./mvnw verify -B --no-transfer-progress
+        run: |
+          chmod +x mvnw
+          ./mvnw verify -B --no-transfer-progress
 
       - name: Upload test reports
         if: always()
